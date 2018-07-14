@@ -1,4 +1,7 @@
-
+"""
+board.py is an implementation of a tic-tac-toe board for experimentation
+  with MCTS and reinforcement learning.
+"""
 def constant_sequence_check_generator(constant):
     el_is_constant = lambda an_element: an_element == constant
     # checking a row to see if everything in that row is the constant we want
@@ -11,11 +14,20 @@ is_y = constant_sequence_check_generator('y')
 
 class Board():
     def __init__(self):
-        board_dim = 3
+        self.game_name = "tic-tac-toe"
+        self.board_dim = 3
+        self.tokens = ['x','o']
+        self.to_move = 'x'
         self.rows = [["_" for j in range(3)] for i in range(3)]
 
     def __str__(self):
         return "\n".join(["".join(row) for row in self.rows])
+
+    def get_token_to_move(self):
+        return self.to_move
+    
+    def set_token_to_move(self,token):
+        self.to_move = token 
 
     def is_final(self):
         
@@ -28,19 +40,29 @@ class Board():
         is_y = constant_sequence_check_generator('y')
         
         lines = self.rows + list(cols) + [diag1,diag2]
-        if any(map(lambda line: is_x(line) or is_y(line),lines)):
+        if (any(map(lambda line: is_x(line) or is_y(line),lines)) or
+            len(self.get_available_moves()) == 0 ):
             return True
         else:
             return False
 
+    def get_available_moves(self):
+        available_moves = []
+        for i, row in enumerate(self.rows):
+            for j, entry in enumerate(row):
+                if entry not in ('x','o'):
+                    available_moves.append((i,j))
+        return available_moves
 
     def enter_move(self,move_tuple,player):
         i, j = move_tuple
         
         if   player == "x":
             self.rows[i][j] = "x"
+            self.set_token_to_move('o')
         elif player == "o":
             self.rows[i][j] = "o"
+            self.set_token_to_move('x')
         else:
            raise ValueError(
                    "expected player x or o, received {}".format(player)
