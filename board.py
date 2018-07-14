@@ -1,10 +1,3 @@
-# design idea:
-from board import Board
-### Entities
-# Board - contains game state
-# Ref - creates board, asks for move, checks move legality, updates board etc
-# Player - takes board, asks evaluator's input, revalues actions returns best
-# Evaluator - evaluates board, returns 
 
 def constant_sequence_check_generator(constant):
     el_is_constant = lambda an_element: an_element == constant
@@ -52,39 +45,3 @@ class Board():
            raise ValueError(
                    "expected player x or o, received {}".format(player)
                    )
-
-
-
-if __name__ == '__main__':
-    board = Board()
-    moves = [(0,0),(0,1),(0,2)]
-    for move in moves:
-        board.enter_move(move,'x')
-        print(board)
-        print(board.is_final())
-    assert(board.is_final())
-    
-    board = Board()
-    moves_2 = [(0,0),(1,1),(2,2)]
-    for move in moves_2:
-        board.enter_move(move,'x')
-        print(board)
-        print(board.is_final())
-    assert(board.is_final())
-
-    board = Board()
-    moves_3 = [(0,2),(1,1),(2,0)]
-    for move in moves_3:
-        board.enter_move(move,'x')
-        print(board)
-        print(board.is_final())
-    assert(board.is_final())
-
-
-
-
-
-
-
-
-
