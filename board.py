@@ -29,6 +29,25 @@ class Board():
     def set_token_to_move(self,token):
         self.to_move = token 
 
+    def get_result(self):
+        # zipping the rows together gives the columns, since zip makes n lists
+        #  from a list of length m, consisting of sub-lists of length n
+        cols = zip(*[self.rows[i] for i in range(3)])
+        diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
+        diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
+        is_x = constant_sequence_check_generator('x')
+        is_o = constant_sequence_check_generator('o')
+        
+        lines = self.rows + list(cols) + [diag1,diag2]
+        if (any(map(lambda line: is_x(line), lines))):
+            return 'x'
+        elif (any(map(lambda line: is_o(line),lines))):  
+            return 'o'
+        elif len(self.get_available_moves()) == 0:
+            return 'cat'
+        else:
+            return 'unf'
+
     def is_final(self):
         
         # zipping the rows together gives the columns, since zip makes n lists
@@ -37,10 +56,10 @@ class Board():
         diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
         diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
         is_x = constant_sequence_check_generator('x')
-        is_y = constant_sequence_check_generator('y')
+        is_o = constant_sequence_check_generator('o')
         
         lines = self.rows + list(cols) + [diag1,diag2]
-        if (any(map(lambda line: is_x(line) or is_y(line),lines)) or
+        if (any(map(lambda line: is_x(line) or is_o(line),lines)) or
             len(self.get_available_moves()) == 0 ):
             return True
         else:

@@ -1,22 +1,19 @@
 import random
 from board import Board
+from player import Player
 
-class Player():
-
+class MCTSNode():
     def __init__(self):
-        # Do nothing! Someday this should probably load a file or something
-        # That will probably matter for a game that isn't trivially solved
-        self.token = None
-        self.seed = 0 
+        n_visits = 0
+        n_wins = 0
 
-    def ready(self,token='1'): 
-        random.seed(self.seed)
-        self.token= token
+    def value(self):
+        return 0
 
-    def reseed(self,seed):
-        self.seed = seed
+class MCTSPlayer(Player):
 
     def get_move(self,board):
+        mcts_master = MCTSNode()
         available = board.get_available_moves()
         return random.choice(available)
 
