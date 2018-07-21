@@ -4,11 +4,22 @@ from player import Player
 
 class MCTSNode():
     def __init__(self):
-        n_visits = 0
-        n_wins = 0
+        self.is_visited = False
+        self.points = 0
+        self.n_wins = 0
+        self.children = []
 
     def value(self):
-        return 0
+        return n_wins/float(n_visits)
+
+    def extend(self,should_maximize):
+        self.n_visits = 0
+        if should_maximize:
+            best_child = max(self.children, key= lambda x: x.value())
+        else:
+            best_child = min(self.children, key = lambda x: x.value())
+        result = best_child.extend(not should_maximize)
+        self.n_wins
 
 class MCTSPlayer(Player):
 
