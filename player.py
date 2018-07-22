@@ -9,7 +9,7 @@ class Player():
         self.token = None
         self.seed = 0 
 
-    def ready(self,token='1'): 
+    def ready(self,token='x'): 
         random.seed(self.seed)
         self.token= token
 

@@ -8,9 +8,9 @@ class Referee():
         self.players = []
 
 
-    def playgame(self,player1,player2):
+    def playgame(self,player1,player2, board= Board()):
         # playgame takes two players, asks them to get ready,
-        self.board = Board()
+        self.board = board
 
         player1.ready(token='x')
         player2.ready(token='o')

@@ -3,17 +3,23 @@ from board import Board
 from player import Player
 
 class MCTSNode():
-    def __init__(self):
+    def __init__(self,board=Board()):
         self.is_visited = False
         self.points = 0
-        self.n_wins = 0
+        self.n_visits = 0
         self.children = []
 
     def value(self):
-        return n_wins/float(n_visits)
+        if n_visits > 0:
+            return n_points/float(n_visits)
 
-    def extend(self,should_maximize):
-        self.n_visits = 0
+    def extend(self,player_token):
+        
+        if self.n_visits == 0:
+           player_a = Player()
+           player_b = Player()
+
+
         if should_maximize:
             best_child = max(self.children, key= lambda x: x.value())
         else:
@@ -24,7 +30,7 @@ class MCTSNode():
 class MCTSPlayer(Player):
 
     def get_move(self,board):
-        mcts_master = MCTSNode()
+        mcts_master = MCTSNode(board)
         available = board.get_available_moves()
         return random.choice(available)
 
