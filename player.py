@@ -26,6 +26,4 @@ if __name__ == '__main__':
     moves = [(0,0),(0,1),(0,2)]
     for move in moves:
         board.enter_move(move,'x')
-        print(board)
-        print(board.is_final())
     assert(board.is_final())

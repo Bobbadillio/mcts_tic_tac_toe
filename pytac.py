@@ -60,6 +60,7 @@ if __name__ == '__main__':
         player_b.reseed(i)
         result = ref.playgame(player_a,player_b)
         results.append(result)
+
     for i in range(n_games):
         player_a.reseed(i)
         player_b.reseed(i)

@@ -8,9 +8,12 @@ class Referee():
         self.players = []
 
 
-    def playgame(self,player1,player2, board= Board()):
+    def playgame(self,player1,player2, board= None):
         # playgame takes two players, asks them to get ready,
-        self.board = board
+        if board is None:
+            self.board = Board()
+        else:
+            self.board = board
 
         player1.ready(token='x')
         player2.ready(token='o')
@@ -23,7 +26,7 @@ class Referee():
         player2_tuple = (player2,'o')
 
         active_player_tuple = player1_tuple
-        print("starting game!")
+#        print("starting game!")
 #        print(self.board)
         while not self.board.is_final():
             active_token  = self.board.get_token_to_move()
@@ -32,7 +35,7 @@ class Referee():
             player_move   = active_player.get_move(copy.copy(self.board))
             self.board.enter_move(player_move, active_token)
 #            print(self.board)
-        print(self.board)
+#        print(self.board)
         return self.board.get_result()
 
 
