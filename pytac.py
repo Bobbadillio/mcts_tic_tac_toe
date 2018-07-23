@@ -13,39 +13,39 @@ import copy
 
 if __name__ == '__main__':
     board = Board()
-    moves = [(0,0),(0,1),(0,2)]
+    moves = [(0,0),(1,1),(0,1),(2,2),(0,2)]
     for move in moves:
-        board.enter_move(move,'x')
+        board.enter_move(move)
     assert(board.is_final())
     
     board = Board()
-    moves_2 = [(0,0),(1,1),(2,2)]
+    moves_2 = [(0,0),(1,0),(1,1),(2,0),(2,2)]
     for move in moves_2:
-        board.enter_move(move,'x')
+        board.enter_move(move)
     assert board.is_final(), "board should be terminal for x"
 
     board = Board()
-    moves_3 = [(0,2),(1,1),(2,0)]
+    moves_3 = [(0,2),(1,0),(1,1),(0,1),(2,0)]
     for move in moves_3:
-        board.enter_move(move,'x')
+        board.enter_move(move)
     assert board.is_final(), "board should be terminal for x"
     
     board = Board()
-    moves = [(0,0),(0,1),(0,2)]
+    moves_4 = [(2,0),(0,0),(1,1),(0,1),(2,2),(0,2)]
     for move in moves:
-        board.enter_move(move,'o')
+        board.enter_move(move)
     assert board.is_final(), "board should be terminal for o"
     
     board = Board()
-    moves_2 = [(0,0),(1,1),(2,2)]
+    moves_5 = [(1,2),(0,0),(1,0),(1,1),(2,0),(2,2)]
     for move in moves_2:
-        board.enter_move(move,'o')
+        board.enter_move(move)
     assert board.is_final(), "board should be terminal for o"
 
     board = Board()
-    moves_3 = [(0,2),(1,1),(2,0)]
+    moves_6 = [(1,2),(0,2),(1,0),(1,1),(0,1),(2,0)]
     for move in moves_3:
-        board.enter_move(move,'o')
+        board.enter_move(move)
     assert board.is_final(), "board should be terminal for o"
 
 
@@ -58,13 +58,15 @@ if __name__ == '__main__':
     for i in range(n_games):
         player_a.reseed(i)
         player_b.reseed(i)
-        result = ref.playgame(player_a,player_b)
+        print("\n=======================\n")
+        result = ref.playgame(player_a,player_b,should_print=True)
         results.append(result)
 
     for i in range(n_games):
         player_a.reseed(i)
         player_b.reseed(i)
-        result = ref.playgame(player_b,player_a)
+        print("\n=======================\n")
+        result = ref.playgame(player_b,player_a,should_print=True)
         results.append(result)
     print(results)
         

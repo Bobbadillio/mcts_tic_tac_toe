@@ -48,6 +48,19 @@ class Board():
         else:
             return 'unf'
 
+    def get_points(self):
+        result = self.get_result()
+        if result == 'cat':
+            return .5
+        if result == 'x':
+            return 1
+        if result == 'o':
+            return 0
+        else:
+            print("debug this, get_points was called from nonterminal")
+            return .5
+        
+
     def is_final(self):
         
         # zipping the rows together gives the columns, since zip makes n lists
@@ -73,16 +86,11 @@ class Board():
                     available_moves.append((i,j))
         return available_moves
 
-    def enter_move(self,move_tuple,player):
+    def enter_move(self,move_tuple):
         i, j = move_tuple
-        
-        if   player == "x":
-            self.rows[i][j] = "x"
+        active_token = self.get_token_to_move()
+        self.rows[i][j] = active_token
+        if active_token == 'x':
             self.set_token_to_move('o')
-        elif player == "o":
-            self.rows[i][j] = "o"
-            self.set_token_to_move('x')
         else:
-           raise ValueError(
-                   "expected player x or o, received {}".format(player)
-                   )
+            self.set_token_to_move('x')
