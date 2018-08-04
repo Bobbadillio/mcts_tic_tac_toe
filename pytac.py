@@ -49,26 +49,26 @@ if __name__ == '__main__':
     assert board.is_final(), "board should be terminal for o"
 
 
-    n_games = 10
+    n_games = 100
     player_a = Player()
     player_b = MCTSPlayer()
     ref = Referee()
-    results = []
+    o_results = []
     print ("begin to play!")
     for i in range(n_games):
         player_a.reseed(i)
         player_b.reseed(i)
-        print("\n=======================\n")
-        result = ref.playgame(player_a,player_b,should_print=True)
-        results.append(result)
+        result = ref.playgame(player_a,player_b,should_print=False)
+        o_results.append(result)
+    print(o_results)
 
+    x_results = []
     for i in range(n_games):
         player_a.reseed(i)
         player_b.reseed(i)
-        print("\n=======================\n")
-        result = ref.playgame(player_b,player_a,should_print=True)
-        results.append(result)
-    print(results)
+        result = ref.playgame(player_b,player_a,should_print=False)
+        x_results.append(result)
+    print(x_results)
         
 
 

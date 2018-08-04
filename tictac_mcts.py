@@ -106,7 +106,7 @@ class MCTSPlayer(Player):
             should_maximize=self.token == 'x',
             board = copy.deepcopy(board)
         )
-        for i in range(40):
+        for i in range(400):
             mcts_master.extend()
         most_visited = max(
             mcts_master.children,

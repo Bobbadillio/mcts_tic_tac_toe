@@ -7,14 +7,13 @@ class Player():
         # Do nothing! Someday this should probably load a file or something
         # That will probably matter for a game that isn't trivially solved
         self.token = None
-        self.seed = 0 
+        self.randomizer = random.Random()
 
     def ready(self,token='x'): 
-        random.seed(self.seed)
         self.token= token
 
     def reseed(self,seed):
-        self.seed = seed
+        self.randomizer = random.Random(seed)
 
     def get_move(self,board):
         available = board.get_available_moves()
