@@ -5,6 +5,22 @@ from referee import Referee
 import math
 import copy
 
+terminal_board_dict = {}
+def raw_eval(board):
+    if str(board) in terminal_board_dict:
+        return terminal_board_dict[str(board)]
+    player_a = Player()
+    player_b = Player()
+    ref = Referee()
+    result = ref.playgame(
+        player_a,
+        player_b,
+        board= board,
+        lookup = terminal_board_dict
+    )
+    # print(len(terminal_board_dict))
+    return result
+
 class MCTSNode():
     def __init__(
             self, 
@@ -35,6 +51,7 @@ class MCTSNode():
 
     def extend(self):
         if self.board.is_final():
+            raw_eval(self.board)
             self.n_visits += 1
             self.n_points = self.board.get_points()
             return self.board.get_points()
@@ -47,15 +64,10 @@ class MCTSNode():
                 new_board.enter_move(move)
                 new_node = MCTSNode(not self.should_maximize, new_board)
                 self.children.append((new_node,move))
-            #playout
-            player_a = Player()
-            player_b = Player()
-            ref = Referee()
-            result = ref.playgame(
-                player_a,
-                player_b,
-                board= self.board
-            )
+
+            result = raw_eval(self.board)
+
+            # process result of playout
             if result == 'cat':
                 result_points = .5
             if result == 'x':
@@ -67,6 +79,9 @@ class MCTSNode():
             return result_points
 
         elif (not self.is_fully_expanded):
+            # create a filter for children that have a forced win for me
+            # move to that child and add this node to the list of forced
+            # modify to filter for children that aren't forced for opponent
             unexplored_children = filter(
                 lambda a_child: a_child.n_visits == 0,
                 self.get_child_nodes()
@@ -102,6 +117,7 @@ class MCTSNode():
 class MCTSPlayer(Player):
 
     def get_move(self,board):
+        # print(len(terminal_board_dict))
         mcts_master = MCTSNode(
             should_maximize=self.token == 'x',
             board = copy.deepcopy(board)

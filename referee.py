@@ -8,7 +8,14 @@ class Referee():
         self.players = []
 
 
-    def playgame(self,player1,player2, board= None, should_print = False):
+    def playgame(
+            self,
+            player1,
+            player2,
+            board= None,
+            should_print = False,
+            lookup = None
+        ):
         # playgame takes two players, asks them to get ready,
         if board is None:
             self.board = Board()
@@ -34,6 +41,11 @@ class Referee():
             if should_print:
                 print("\n")
                 print(self.board)
+        game_result = self.board.get_result()
+        print("known terminal states in lookup: ", len(lookup))
+        if lookup is not None:
+            lookup[str(self.board)] = self.board.get_result()
+            print("known terminal states in lookup after addition: ", len(lookup))
         return self.board.get_result()
 
 
