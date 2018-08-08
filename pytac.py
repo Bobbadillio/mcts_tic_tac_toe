@@ -56,18 +56,35 @@ if __name__ == '__main__':
     o_results = []
     print ("begin to play!")
     for i in range(n_games):
+        if i%10 == 0:
+            print("\n")
         player_a.reseed(i)
         player_b.reseed(i)
         result = ref.playgame(player_a,player_b,should_print=False)
         o_results.append(result)
+        print(result, end=' ')
+
     print(o_results)
 
     x_results = []
     for i in range(n_games):
+        if i%10 == 0:
+            print("\n")
         player_a.reseed(i)
         player_b.reseed(i)
         result = ref.playgame(player_b,player_a,should_print=False)
         x_results.append(result)
+        print(result, end=' ')
+
+
+    for i in range(n_games):
+        if i%10 == 0:
+            print("\n")
+        player_a.reseed(i)
+        player_b.reseed(i)
+        result = ref.playgame(player_a,player_b,should_print=False)
+        x_results.append(result)
+        print(result, end=' ')
     print(x_results)
         
 
