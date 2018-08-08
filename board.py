@@ -12,7 +12,16 @@ def constant_sequence_check_generator(constant):
 is_x = constant_sequence_check_generator('x')
 is_y = constant_sequence_check_generator('y')
 
+point_dict = {
+        "x":1,
+        "cat":.5,
+        "o":0
+    }
+
 class Board():
+    def point_translator(result_string):
+        return point_dict.get(result_string)
+
     def __init__(self):
         self.game_name = "tic-tac-toe"
         self.board_dim = 3
