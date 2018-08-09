@@ -41,11 +41,14 @@ class Referee():
             if should_print:
                 print("\n")
                 print(self.board)
+            if lookup is not None:
+                if str(self.board) in lookup:
+                    game_result = lookup[str(self.board)]
         game_result = self.board.get_result()
         if lookup is not None:
             if str(self.board) not in lookup:
-                lookup[str(self.board)] = self.board.get_result()
+                lookup[str(self.board)] = game_result
                 #print("known terminal states in lookup after addition: ", len(lookup))
-        return self.board.get_result()
+        return game_result
 
 
