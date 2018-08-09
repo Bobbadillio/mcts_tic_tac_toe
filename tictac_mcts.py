@@ -4,8 +4,16 @@ from player import Player
 from referee import Referee
 import math
 import copy
+import pickle as pkl
 
 terminal_board_dict = {}
+try:
+    with open("board_dictionary.pkl",'rb') as check_dict:
+        terminal_board_dict = pkl.load(check_dict)
+        print(len(terminal_board_dict))
+except Exception as e:
+    print(e)
+
 def raw_eval(board):
     if str(board) in terminal_board_dict:
         return terminal_board_dict[str(board)]
@@ -50,7 +58,14 @@ class MCTSNode():
         return [child[0] for child in self.children]
 
     def extend(self):
-        if self.n_visits == 0:
+        if self.board.is_final():
+            self.n_visits += 1
+            self.points += self.board.get_points()
+            board_string = str(self.board)
+            if board_string not in terminal_board_dict:
+                terminal_board_dict[board_string] = self.board.get_result()
+            return self.board.get_points()
+        elif self.n_visits == 0:
             self.n_visits += 1
             # create child boards on first visit
             # notably, this assumes deterministic transition between states
@@ -60,43 +75,72 @@ class MCTSNode():
                 new_board = copy.deepcopy(self.board)
                 new_board.enter_move(move)
                 new_node = MCTSNode(not self.should_maximize, new_board)
+                if new_board.is_final():
+                    terminal_board_dict[str(new_board)] = new_board.get_result()
                 if str(new_board) in terminal_board_dict:
                     new_result = terminal_board_dict[str(new_board)]
-                    if self.should_maximize and new_result == 'x':
-                        terminal_board_dict[str(self.board)] = 'x'
-                        self.children = [(new_node,move)]
-                        break
-                    elif not self.should_maximize and new_result == 'o':
-                        terminal_board_dict[str(self.board)] = 'o'
-                        self.children = [(new_node,move)]
-                        break
+                    if self.should_maximize:
+                        if new_result == 'x':
+                            # x is to play, so only consider the force win
+                            terminal_board_dict[str(self.board)] = 'x'
+                            self.children = [(new_node,move)]
+                            break
+                        elif new_result == 'o':
+                            # don't consider opponent wins
+                            continue
+                        else:
+                            self.children.append((new_node,move))
+                    elif not self.should_maximize:
+                        # see above comments, and
+                        # TODO: reduce code redundancy with above block
+                        if new_result == 'o':
+                            terminal_board_dict[str(self.board)] = 'o'
+                            self.children = [(new_node,move)]
+                            break
+                        elif new_result == 'x':
+                            continue
+                        else:
+                            self.children.append((new_node,move))
+
                     else:
                         self.children.append((new_node,move))
                 else:
                     self.children.append((new_node,move))
+            if len(self.children) == 0:
+                # if only losing moves remain, pick one at random
+                new_board = copy.deepcopy(self.board)
+                new_move = random.choice(self.board.get_available_moves())
+                new_board.enter_move(new_move)
+                new_node = MCTSNode(not self.should_maximize, new_board)
+                self.children.append((new_node,move))
 
+
+            # return known winner for terminal positions
+            # and return the random playout for unknown positions
             if str(self.board) in terminal_board_dict:
+                # return known winner for terminal
                 result = terminal_board_dict[str(self.board)]
             else:
                 result = raw_eval(self.board)
 
             # process result of playout
             result_points = Board.point_translator(result)
-            self.points = result_points
+            self.points += result_points
             return result_points
         elif str(self.board) in terminal_board_dict:
             winning_token = terminal_board_dict[str(self.board)]
             self.n_visits += 1
             terminal_points = Board.point_translator(winning_token)
-            self.n_points = terminal_points
+            self.points += terminal_points
 
-            return self.n_points
+            return terminal_points
 
         elif self.board.is_final():
             raw_eval(self.board)
             self.n_visits += 1
-            self.n_points = self.board.get_points()
-            return self.board.get_points()
+            result_points = self.board.get_points()
+            self.points += result_points
+            return result_points
 
         elif (not self.is_fully_expanded):
             self.n_visits += 1
@@ -145,33 +189,31 @@ class MCTSNode():
 
 class MCTSPlayer(Player):
 
+
     def get_move(self,board):
         # print(len(terminal_board_dict))
         mcts_master = MCTSNode(
-            should_maximize=self.token == 'x',
+            should_maximize = self.token == 'x',
             board = copy.deepcopy(board)
         )
         n_rollouts = 400
         for i in range(n_rollouts):
-            solved_child = False
+            # check if node solved, and return a winning move if it is
             for child in mcts_master.children:
-                if ((str(child[0].board) in terminal_board_dict)
-                and (terminal_board_dict[str(child[0].board)] == self.token)):
-                    print("early exit on board:\n{}\nmove {}".format(
-                        board,
-                        child[1]
-                        )
-                    )
+                child_string = str(child[0].board)
+                if ((child_string in terminal_board_dict)
+                and (terminal_board_dict[child_string] == self.token)):
                     return child[1]
+            # extend by monte carlo tree search
             mcts_master.extend()
+
+        # choose a final move by whatever was most frequently visited
         most_visited = max(
             mcts_master.children,
             key = lambda a_child: a_child[0].n_visits
         )
-        #for key in terminal_board_dict.keys():
-        #    print("{}\n{}\n===========".format(key,terminal_board_dict[key]))
         return most_visited[1]
-
+    
 
 if __name__ == '__main__':
     print("no tests defined in main yet")
