@@ -3,6 +3,7 @@ from board import Board
 from player import Player
 from tictac_mcts import MCTSPlayer
 from referee import Referee
+from collections import Counter
 import copy
 
 ### Entities
@@ -49,43 +50,45 @@ if __name__ == '__main__':
     assert board.is_final(), "board should be terminal for o"
 
 
-    n_games = 100
+    n_games = 1000
     player_a = Player()
     player_b = MCTSPlayer()
     ref = Referee()
     o_results = []
     print ("begin to play!")
     for i in range(n_games):
-        if i%10 == 0:
+        if i%100 == 0:
             print("\n")
+            print(Counter(o_results))
         player_a.reseed(i)
         player_b.reseed(i)
         result = ref.playgame(player_a,player_b,should_print=False)
         o_results.append(result)
-        print(result, end=' ')
+#        print(result, end=' ')
 
-    print(o_results)
+    print(Counter(o_results))
 
     x_results = []
     for i in range(n_games):
-        if i%10 == 0:
+        if i%100 == 0:
             print("\n")
         player_a.reseed(i)
         player_b.reseed(i)
         result = ref.playgame(player_b,player_a,should_print=False)
         x_results.append(result)
         print(result, end=' ')
+    print(Counter(x_results))
 
-
+    last_results = []
     for i in range(n_games):
-        if i%10 == 0:
+        if i%100 == 0:
             print("\n")
         player_a.reseed(i)
         player_b.reseed(i)
         result = ref.playgame(player_a,player_b,should_print=False)
-        x_results.append(result)
+        last_results.append(result)
         print(result, end=' ')
-    print(x_results)
+    print(Counter(last_results))
         
 
 
