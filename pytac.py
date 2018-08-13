@@ -50,14 +50,14 @@ if __name__ == '__main__':
     assert board.is_final(), "board should be terminal for o"
 
 
-    n_games = 1000
+    n_games = 100
     player_a = Player()
     player_b = MCTSPlayer()
     ref = Referee()
     o_results = []
     print ("begin to play!")
     for i in range(n_games):
-        if i%100 == 0:
+        if i%10 == 0:
             print("\n")
             print(Counter(o_results))
         player_a.reseed(i)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     x_results = []
     for i in range(n_games):
-        if i%100 == 0:
+        if i%10 == 0:
             print("\n")
         player_a.reseed(i)
         player_b.reseed(i)
