@@ -66,6 +66,8 @@ class MCTSNode():
                 terminal_board_dict[board_string] = self.board.get_result()
             return self.board.get_points()
         elif self.n_visits == 0:
+            #print(self.board)
+            #print(self.board.is_final())
             self.n_visits += 1
             # create child boards on first visit
             # notably, this assumes deterministic transition between states
@@ -196,7 +198,7 @@ class MCTSPlayer(Player):
             should_maximize = self.token == 'x',
             board = copy.deepcopy(board)
         )
-        n_rollouts = 400
+        n_rollouts = 10
         for i in range(n_rollouts):
             # check if node solved, and return a winning move if it is
             for child in mcts_master.children:
