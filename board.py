@@ -2,6 +2,8 @@
 board.py is an implementation of a tic-tac-toe board for experimentation
   with MCTS and reinforcement learning.
 """
+import numpy as np
+
 def constant_sequence_check_generator(constant):
     el_is_constant = lambda an_element: an_element == constant
     # checking a row to see if everything in that row is the constant we want
@@ -23,39 +25,80 @@ class Board():
         return point_dict.get(result_string)
 
     def __init__(self):
+        """
+        use a rank-3 tensor to store 3, 3x3 boards
+        1st 3x3 is all 0 or all 1, for x to move or o to move respectively
+        2nd 3x3 is 1 for locations with an x in them
+        3rd 3x3 is 1 for locations with on o in them
+        """
         self.game_name = "tic-tac-toe"
         self.board_dim = 3
         self.tokens = ['x','o']
-        self.to_move = 'x'
+        self.board_state = np.zeros((3,3,3), dtype= np.bool)
+#        self.to_move = 'x'
         self.rows = [["_" for j in range(3)] for i in range(3)]
 
     def __str__(self):
-        return "\n".join(["".join(row) for row in self.rows])
+        rep = self.board_state[2,:,:]*2 + self.board_state[1,:,:]*1
+        return str(rep)
 
     def get_token_to_move(self):
-        return self.to_move
+        return 'o' if self.board_state[0,0,0] else 'x'
+#        return self.to_move
     
     def set_token_to_move(self,token):
-        self.to_move = token 
+        self.board_state[0,:,:] = False if token == 'x' else True
+#        self.to_move = token 
 
     def get_result(self):
         # zipping the rows together gives the columns, since zip makes n lists
         #  from a list of length m, consisting of sub-lists of length n
-        cols = zip(*[self.rows[i] for i in range(3)])
-        diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
-        diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
-        is_x = constant_sequence_check_generator('x')
-        is_o = constant_sequence_check_generator('o')
-        
-        lines = self.rows + list(cols) + [diag1,diag2]
-        if (any(map(lambda line: is_x(line), lines))):
-            return 'x'
-        elif (any(map(lambda line: is_o(line),lines))):  
-            return 'o'
-        elif len(self.get_available_moves()) == 0:
+        token_dims = self.board_state[1:,:,:]
+        rows = np.sum(token_dims,axis=1)
+        columns = np.sum(token_dims,axis=2)
+        diagonal = np.trace(token_dims,axis1=1,axis2=2)
+        back_diagonal = np.trace(np.fliplr(token_dims),axis1=1,axis2=2)
+
+        if np.any(rows==3):
+            if np.any(rows[0,:]==3):
+                return 'x'
+            else:
+                return 'o'
+        elif np.any(columns==3):
+            if np.any(columns[0,:]==3):
+                return 'x'
+            else:
+                return 'o'
+        elif np.any(diagonal == 3):
+            if diagonal[0]==3:
+                return 'x'
+            else:
+                return 'o'
+        elif np.any(back_diagonal==3):
+            if diagonal[0] == 3:
+                return 'x'
+            else:
+                return 'o'
+        elif np.sum(token_dims) ==9:
             return 'cat'
         else:
             return 'unf'
+
+#        cols = zip(*[self.rows[i] for i in range(3)])
+#        diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
+#        diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
+#        is_x = constant_sequence_check_generator('x')
+#        is_o = constant_sequence_check_generator('o')
+#        
+#        lines = self.rows + list(cols) + [diag1,diag2]
+#        if (any(map(lambda line: is_x(line), lines))):
+#            return 'x'
+#        elif (any(map(lambda line: is_o(line),lines))):  
+#            return 'o'
+#        elif len(self.get_available_moves()) == 0:
+#            return 'cat'
+#        else:
+#            return 'unf'
 
     def get_points(self):
         result = self.get_result()
@@ -71,35 +114,43 @@ class Board():
         
 
     def is_final(self):
+        result = self.get_result()
+        return result != 'unf'
         
-        # zipping the rows together gives the columns, since zip makes n lists
-        #  from a list of length m, consisting of sub-lists of length n
-        cols = zip(*[self.rows[i] for i in range(3)])
-        diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
-        diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
-        is_x = constant_sequence_check_generator('x')
-        is_o = constant_sequence_check_generator('o')
-        
-        lines = self.rows + list(cols) + [diag1,diag2]
-        if (any(map(lambda line: is_x(line) or is_o(line),lines)) or
-            len(self.get_available_moves()) == 0 ):
-            return True
-        else:
-            return False
+#        # zipping the rows together gives the columns, since zip makes n lists
+#        #  from a list of length m, consisting of sub-lists of length n
+#        cols = zip(*[self.rows[i] for i in range(3)])
+#        diag1 = [self.rows[0][0],self.rows[1][1],self.rows[2][2]]
+#        diag2 = [self.rows[0][2],self.rows[1][1],self.rows[2][0]]
+#        is_x = constant_sequence_check_generator('x')
+#        is_o = constant_sequence_check_generator('o')
+#        
+#        lines = self.rows + list(cols) + [diag1,diag2]
+#        if (any(map(lambda line: is_x(line) or is_o(line),lines)) or
+#            len(self.get_available_moves()) == 0 ):
+#            return True
+#        else:
+#            return False
 
     def get_available_moves(self):
-        available_moves = []
-        for i, row in enumerate(self.rows):
-            for j, entry in enumerate(row):
-                if entry not in ('x','o'):
-                    available_moves.append((i,j))
+        indices = np.nonzero(
+            np.logical_not(
+                np.any(
+                    self.board_state[1:,:,:],axis=0
+                )
+            )
+        )
+        available_moves = [(i,j) for i,j in np.transpose(indices)] 
+#        print(self)
+#        print(available_moves)
         return available_moves
 
     def enter_move(self,move_tuple):
         i, j = move_tuple
         active_token = self.get_token_to_move()
-        self.rows[i][j] = active_token
         if active_token == 'x':
+            self.board_state[1,i,j] = True
             self.set_token_to_move('o')
         else:
+            self.board_state[2,i,j] = True
             self.set_token_to_move('x')
