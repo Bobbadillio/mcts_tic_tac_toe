@@ -8,7 +8,7 @@ import pickle as pkl
 
 terminal_board_dict = {}
 try:
-    with open("board_dictionary.pkl",'rb') as check_dict:
+    with open("terminal_states.hdf5",'rb') as check_dict:
         terminal_board_dict = pkl.load(check_dict)
         print(len(terminal_board_dict))
 except Exception as e:

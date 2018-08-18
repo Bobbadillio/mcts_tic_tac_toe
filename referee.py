@@ -29,10 +29,7 @@ class Referee():
             "x": player1,
             "o": player2
         }
-#        player1_tuple = (player1,'x')
-#        player2_tuple = (player2,'o')
 
-#        active_player_tuple = player1_tuple
         while not self.board.is_final():
             active_token  = self.board.get_token_to_move()
             active_player = player_dict[active_token]
